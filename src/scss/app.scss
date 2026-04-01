@@ -1,0 +1,120 @@
+@use "sass:color";
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+
+$primary: #9147b3;
+$secondary: #7a7a7a;
+$warning: #b38600;
+$danger: #c84632;
+$success: #3d9970;
+$info: #3986b3;
+
+$font-family-sans-serif: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+$font-family-monospace:   'IBM Plex Mono', monospace;
+$font-family-headings:    'Space Grotesk', sans-serif;
+
+$border-radius: 0.25rem;
+$btn-font-weight: 500;
+$headings-font-weight: 700;
+$headings-letter-spacing: -0.03em;
+$line-height-base: 1.6;
+
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": #f8f9fa,
+  "dark": #121212,
+);
+
+@function vuetify-rgb($value) {
+  @return "#{color.channel($value, 'red', $space: rgb)}, #{color.channel($value, 'green', $space: rgb)}, #{color.channel($value, 'blue', $space: rgb)}";
+}
+
+:root,
+.v-theme--light {
+  --v-theme-primary: #{vuetify-rgb($primary)};
+  --v-theme-secondary: #{vuetify-rgb($secondary)};
+  --v-theme-success: #{vuetify-rgb($success)};
+  --v-theme-info: #{vuetify-rgb($info)};
+  --v-theme-warning: #{vuetify-rgb($warning)};
+  --v-theme-error: #{vuetify-rgb($danger)};
+  --v-theme-surface: #{vuetify-rgb(#ffffff)};
+  --v-theme-background: #{vuetify-rgb(#f8f9fa)};
+  --v-theme-on-primary: #{vuetify-rgb(#ffffff)};
+  --v-theme-on-secondary: #{vuetify-rgb(#ffffff)};
+  --v-theme-on-surface: #{vuetify-rgb(#121212)};
+}
+
+.v-theme--dark {
+  --v-theme-primary: #{vuetify-rgb($primary)};
+  --v-theme-secondary: #{vuetify-rgb($secondary)};
+  --v-theme-success: #{vuetify-rgb($success)};
+  --v-theme-info: #{vuetify-rgb($info)};
+  --v-theme-warning: #{vuetify-rgb($warning)};
+  --v-theme-error: #{vuetify-rgb($danger)};
+  --v-theme-surface: #{vuetify-rgb(#1e1e1e)};
+  --v-theme-background: #{vuetify-rgb(#121212)};
+  --v-theme-on-primary: #{vuetify-rgb(#ffffff)};
+  --v-theme-on-secondary: #{vuetify-rgb(#ffffff)};
+  --v-theme-on-surface: #{vuetify-rgb(#ffffff)};
+}
+
+.v-theme--dark {
+  .v-tab.v-tab--selected,
+  .v-tab.v-tab--selected .v-btn__content,
+  .v-list-item.v-list-item--active .v-list-item-title,
+  .v-list-item.v-list-item--active .v-list-item-subtitle {
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+
+  .v-chip.v-chip--selected {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    border-color: rgb(var(--v-theme-primary)) !important;
+  }
+
+  .v-chip.v-chip--selected .v-chip__content,
+  .v-chip.v-chip--selected .v-chip__prepend,
+  .v-chip.v-chip--selected .v-chip__append,
+  .v-chip.v-chip--variant-tonal .v-chip__content,
+  .v-chip.v-chip--variant-tonal .v-chip__prepend,
+  .v-chip.v-chip--variant-tonal .v-chip__append {
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+
+  .v-chip.v-chip--variant-tonal.text-primary {
+    background-color: rgba(var(--v-theme-primary), 0.24) !important;
+    border-color: rgba(var(--v-theme-primary), 0.46) !important;
+  }
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em; // Tighten the body slightly for that 'pro' look
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.text-style {
+  font-family: "IBM Plex Mono", monospace;
+  color: $primary;
+  text-shadow: 0 0 8px rgba($primary, 0.6);
+  letter-spacing: 1px;
+}
+
+.card-style {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba($primary, 0.2);
+  backdrop-filter: blur(10px);
+}

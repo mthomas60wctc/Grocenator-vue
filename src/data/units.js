@@ -1,0 +1,16 @@
+export const units = [
+  { unit: "count", pluralUnit: "count", alias: "", pluralAlias: "", aspect: "amount" },
+  { unit: "oz", pluralUnit: "oz", alias: "ounce", pluralAlias: "ounces", aspect: "weight" },
+  { unit: "lb", pluralUnit: "lbs", alias: "pound", pluralAlias: "pounds", aspect: "weight" },
+  { unit: "cup", pluralUnit: "cups", alias: "cup", pluralAlias: "cups", aspect: "volume" },
+  { unit: "gal", pluralUnit: "gallons", alias: "gallon", pluralAlias: "gallons", aspect: "volume" },
+  { unit: "L", pluralUnit: "liters", alias: "liter", pluralAlias: "liters", aspect: "volume" },
+  { unit: "bag", pluralUnit: "bags", alias: "bag", pluralAlias: "bags", aspect: "package" },
+  { unit: "box", pluralUnit: "boxes", alias: "box", pluralAlias: "boxes", aspect: "package" },
+  { unit: "can", pluralUnit: "cans", alias: "can", pluralAlias: "cans", aspect: "package" },
+  { unit: "bottle", pluralUnit: "bottles", alias: "bottle", pluralAlias: "bottles", aspect: "package" },
+  { unit: "jar", pluralUnit: "jars", alias: "jar", pluralAlias: "jars", aspect: "package" },
+  { unit: "loaf", pluralUnit: "loaves", alias: "loaf", pluralAlias: "loaves", aspect: "amount" },
+  { unit: "head", pluralUnit: "heads", alias: "head", pluralAlias: "heads", aspect: "amount" },
+  { unit: "bulb", pluralUnit: "bulbs", alias: "bulb", pluralAlias: "bulbs", aspect: "amount" },
+];

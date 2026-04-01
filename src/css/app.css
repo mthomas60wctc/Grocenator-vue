@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap");
+:root,
+.v-theme--light {
+  --v-theme-primary: 145, 71, 179;
+  --v-theme-secondary: 122, 122, 122;
+  --v-theme-success: 61, 153, 112;
+  --v-theme-info: 57, 134, 179;
+  --v-theme-warning: 179, 134, 0;
+  --v-theme-error: 200, 70, 50;
+  --v-theme-surface: 255, 255, 255;
+  --v-theme-background: 248, 249, 250;
+  --v-theme-on-primary: 255, 255, 255;
+  --v-theme-on-secondary: 255, 255, 255;
+  --v-theme-on-surface: 18, 18, 18;
+}
+
+.v-theme--dark {
+  --v-theme-primary: 145, 71, 179;
+  --v-theme-secondary: 122, 122, 122;
+  --v-theme-success: 61, 153, 112;
+  --v-theme-info: 57, 134, 179;
+  --v-theme-warning: 179, 134, 0;
+  --v-theme-error: 200, 70, 50;
+  --v-theme-surface: 30, 30, 30;
+  --v-theme-background: 18, 18, 18;
+  --v-theme-on-primary: 255, 255, 255;
+  --v-theme-on-secondary: 255, 255, 255;
+  --v-theme-on-surface: 255, 255, 255;
+}
+
+.v-theme--dark .v-tab.v-tab--selected,
+.v-theme--dark .v-tab.v-tab--selected .v-btn__content,
+.v-theme--dark .v-list-item.v-list-item--active .v-list-item-title,
+.v-theme--dark .v-list-item.v-list-item--active .v-list-item-subtitle {
+  color: rgb(var(--v-theme-on-primary)) !important;
+}
+.v-theme--dark .v-chip.v-chip--selected {
+  background-color: rgb(var(--v-theme-primary)) !important;
+  border-color: rgb(var(--v-theme-primary)) !important;
+}
+.v-theme--dark .v-chip.v-chip--selected .v-chip__content,
+.v-theme--dark .v-chip.v-chip--selected .v-chip__prepend,
+.v-theme--dark .v-chip.v-chip--selected .v-chip__append,
+.v-theme--dark .v-chip.v-chip--variant-tonal .v-chip__content,
+.v-theme--dark .v-chip.v-chip--variant-tonal .v-chip__prepend,
+.v-theme--dark .v-chip.v-chip--variant-tonal .v-chip__append {
+  color: rgb(var(--v-theme-on-primary)) !important;
+}
+.v-theme--dark .v-chip.v-chip--variant-tonal.text-primary {
+  background-color: rgba(var(--v-theme-primary), 0.24) !important;
+  border-color: rgba(var(--v-theme-primary), 0.46) !important;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+input[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.text-style {
+  font-family: "IBM Plex Mono", monospace;
+  color: #9147b3;
+  text-shadow: 0 0 8px rgba(145, 71, 179, 0.6);
+  letter-spacing: 1px;
+}
+
+.card-style {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(145, 71, 179, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/*# sourceMappingURL=app.css.map */
