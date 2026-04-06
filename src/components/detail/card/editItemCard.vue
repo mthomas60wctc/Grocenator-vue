@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch } from "vue";
 import CardActionButton from "../../shared/cardActionButton.vue";
+import { useItemEditDraft } from "../../../composables/useItemEditDraft";
 
 const props = defineProps({
   item: {
@@ -22,55 +22,15 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["cancel", "save"]);
-
-const draft = ref(createDraft(props.item));
-
-watch(
-  () => props.item,
-  (nextItem) => {
-    draft.value = createDraft(nextItem);
-  },
-  { deep: true }
-);
-
-function createInventory(initialValues = {}) {
-  return props.inventoryLocations.reduce((inventory, location) => {
-    inventory[location] = Number(initialValues[location] || 0);
-    return inventory;
-  }, {});
-}
-
-function createDraft(item) {
-  return {
-    name: item?.name || "",
-    inventory: createInventory(item?.inventory || {}),
-    shopping: Number(item?.shopping || 0),
-    unitRef: item?.unitRef || props.units[0]?.unit || "",
-    restock: Number(item?.restock || 0),
-  };
-}
+const { draft, inputToNumber, numberToInput } = useItemEditDraft(props, {
+  getDefaultUnitRef: () => props.units[0]?.unit || "",
+});
 
 function save() {
   emit("save", {
     ...draft.value,
     inventory: { ...draft.value.inventory },
   });
-}
-
-function locationLabel(location) {
-  return props.locationLabels[location] || location;
-}
-
-function numberToInput(value) {
-  return Number(value || 0) === 0 ? "" : String(value);
-}
-
-function inputToNumber(value) {
-  if (value === null || value === undefined || String(value).trim() === "") {
-    return 0;
-  }
-  const parsedValue = Number(value);
-  return Number.isFinite(parsedValue) ? parsedValue : 0;
 }
 </script>
 
@@ -111,7 +71,7 @@ function inputToNumber(value) {
         v-for="location in inventoryLocations"
         :key="`edit-${location}`"
         type="number"
-        :label="`${locationLabel(location)} Quantity`"
+        :label="`${locationLabels[location] || location} Quantity`"
         :model-value="numberToInput(draft.inventory[location])"
         density="compact"
         hide-details

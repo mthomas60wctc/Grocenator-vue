@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { useItemMoveDraft } from "../../../composables/useItemMoveDraft";
 import CardActionButton from "../../shared/cardActionButton.vue";
 
 const props = defineProps({
@@ -18,72 +18,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["cancel", "move"]);
-
-const draft = ref(createDraft(props.item));
-
-watch(
-  () => props.item,
-  (nextItem) => {
-    draft.value = createDraft(nextItem);
-  },
-  { deep: true }
-);
-
-const fromLocationOptions = computed(() =>
-  props.inventoryLocations
-    .filter((location) => Number(props.item?.inventory?.[location] || 0) > 0)
-    .map((location) => ({
-      title: locationLabel(location),
-      value: location,
-    }))
-);
-
-const toLocationOptions = computed(() =>
-  props.inventoryLocations
-    .filter((location) => location !== draft.value.fromLocation)
-    .map((location) => ({
-      title: locationLabel(location),
-      value: location,
-    }))
-);
-
-watch(
-  [fromLocationOptions, toLocationOptions],
-  ([fromOptions, toOptions]) => {
-    if (!fromOptions.some((option) => option.value === draft.value.fromLocation)) {
-      draft.value.fromLocation = fromOptions[0]?.value || "";
-    }
-    if (!toOptions.some((option) => option.value === draft.value.toLocation)) {
-      draft.value.toLocation = toOptions[0]?.value || "";
-    }
-  },
-  { immediate: true }
-);
-
-function createDraft(item) {
-  const availableFromLocations = props.inventoryLocations.filter(
-    (location) => Number(item?.inventory?.[location] || 0) > 0
-  );
-  const fromLocation = availableFromLocations[0] || props.inventoryLocations[0] || "";
-  const toLocation = props.inventoryLocations.find((location) => location !== fromLocation) || "";
-
-  return {
-    quantity: "",
-    fromLocation,
-    toLocation,
-  };
-}
+const { draft, fromLocationOptions, toLocationOptions, inputToNumber } = useItemMoveDraft(props, locationLabel);
 
 function locationLabel(location) {
   return props.locationLabels[location] || location;
-}
-
-function inputToNumber(value) {
-  if (value === null || value === undefined || String(value).trim() === "") {
-    return 0;
-  }
-  const parsedValue = Number(value);
-  return Number.isFinite(parsedValue) ? parsedValue : 0;
 }
 
 function move() {

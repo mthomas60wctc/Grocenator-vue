@@ -96,6 +96,7 @@ const protoItem = ref({
 function toggleTheme() {
   theme.change(theme.global.current.value.dark ? "light" : "dark");
 }
+
 function setActiveTab(tab) {
   const allCategories = Object.keys(categories.value);
   const allSubcategories = Object.values(categories.value).flat();
@@ -171,7 +172,6 @@ function saveEdit(draft) {
   if (!selectedItem.value || !draft) {
     return;
   }
-
   Object.assign(selectedItem.value, {
     name: draft.name,
     inventory: { ...createInventory(draft.inventory), ...draft.inventory },
@@ -189,7 +189,6 @@ function moveItem(movePayload) {
   if (!selectedItem.value || !movePayload) {
     return;
   }
-
   const fromLocation = movePayload.fromLocation;
   const toLocation = movePayload.toLocation;
   const requestedQuantity = Number(movePayload.quantity || 0);
@@ -197,14 +196,12 @@ function moveItem(movePayload) {
   if (!fromLocation || !toLocation || fromLocation === toLocation || requestedQuantity <= 0) {
     return;
   }
-
   const availableQuantity = Number(selectedItem.value.inventory?.[fromLocation] || 0);
   const transferQuantity = Math.min(requestedQuantity, availableQuantity);
 
   if (transferQuantity <= 0) {
     return;
   }
-
   selectedItem.value.inventory[fromLocation] = availableQuantity - transferQuantity;
   selectedItem.value.inventory[toLocation] = Number(selectedItem.value.inventory?.[toLocation] || 0) + transferQuantity;
 
@@ -216,22 +213,17 @@ function removeItem(item) {
   if (!item) {
     return;
   }
-
   const itemIndex = itemList.value.findIndex((listItem) => listItem === item);
   if (itemIndex < 0) {
     return;
   }
-
   lastDeletedItem.value = item;
   lastDeletedIndex.value = itemIndex;
   deletedItemName.value = item.name || "Item";
-
   itemList.value.splice(itemIndex, 1);
-
   if (selectedItem.value === item) {
     handleCloseDetail();
   }
-
   undoToastKey.value += 1;
   showUndoToast.value = true;
 }
@@ -241,13 +233,11 @@ function undoRemoveItem() {
     showUndoToast.value = false;
     return;
   }
-
   const insertionIndex = Math.min(
     Math.max(lastDeletedIndex.value, 0),
     itemList.value.length
   );
   itemList.value.splice(insertionIndex, 0, lastDeletedItem.value);
-
   showUndoToast.value = false;
   deletedItemName.value = "";
   lastDeletedItem.value = null;
@@ -262,6 +252,7 @@ function handleUndoToastVisibility(nextValue) {
     lastDeletedIndex.value = -1;
   }
 }
+
 function addItem() {
   itemList.value.push({
     ...protoItem.value,

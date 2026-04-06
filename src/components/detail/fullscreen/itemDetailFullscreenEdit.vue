@@ -1,5 +1,7 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
+import { resolveLocationLabel } from "../../../composables/itemHelpers";
+import { useItemEditDraft } from "../../../composables/useItemEditDraft";
 import CardActionButton from "../../shared/cardActionButton.vue";
 
 const props = defineProps({
@@ -18,46 +20,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["cancel", "save"]);
+const { draft, inputToNumber, numberToInput } = useItemEditDraft(props);
 
-const draft = ref(createDraft(props.item));
 const editableLocationEntries = computed(() => Object.entries(draft.value.inventory || {}));
-
-watch(
-  () => props.item,
-  (nextItem) => {
-    draft.value = createDraft(nextItem);
-  },
-  { immediate: true }
-);
-
-function createDraft(item) {
-  const inventory = props.inventoryLocations.reduce((acc, location) => {
-    acc[location] = Number(item?.inventory?.[location] || 0);
-    return acc;
-  }, {});
-
-  return {
-    inventory,
-    shopping: Number(item?.shopping || 0),
-    restock: Number(item?.restock || 0),
-  };
-}
-
-function locationLabel(location) {
-  return props.locationLabels[location] || location.charAt(0).toUpperCase() + location.slice(1);
-}
-
-function numberToInput(value) {
-  return Number(value || 0) === 0 ? "" : String(value);
-}
-
-function inputToNumber(value) {
-  if (value === null || value === undefined || String(value).trim() === "") {
-    return 0;
-  }
-  const parsedValue = Number(value);
-  return Number.isFinite(parsedValue) ? parsedValue : 0;
-}
 
 function save() {
   emit("save", {
@@ -113,7 +78,7 @@ function save() {
               type="number"
               density="compact"
               hide-details
-              :label="`${locationLabel(location)} Quantity`"
+              :label="`${resolveLocationLabel(location, props.locationLabels)} Quantity`"
               class="inline-edit-field inline-edit-field--full"
               @update:model-value="draft.inventory[location] = inputToNumber($event)"
             />

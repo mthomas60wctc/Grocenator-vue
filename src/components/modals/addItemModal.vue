@@ -19,20 +19,25 @@ const props = defineProps({
     default: () => [],
   },
 });
+
 const isOpen = ref(false);
+
+const emit = defineEmits(["open", "submit", "close"]);
+
 function openModal() {
   emit("open");
   isOpen.value = true;
 }
+
 function closeModal() {
   isOpen.value = false;
   emit("close");
 }
+
 function submitModal() {
   emit("submit");
   closeModal();
 }
-const emit = defineEmits(["open", "submit", "close"]);
 
 function locationLabel(location) {
   return props.locationLabels[location] || location;

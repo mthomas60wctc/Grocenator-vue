@@ -1,5 +1,12 @@
 <script setup>
 import CardActionButton from "../../shared/cardActionButton.vue";
+import {
+  locationEntries,
+  quantityWithUnit,
+  resolveLocationLabel,
+  totalInventoryText,
+  unitDisplay,
+} from "../../../composables/itemHelpers";
 
 const props = defineProps({
   item: {
@@ -21,44 +28,6 @@ const emit = defineEmits(["action"]);
 function handleAction(action) {
   emit("action", action);
 }
-
-function locationLabel(location) {
-  return props.locationLabels[location] || location.charAt(0).toUpperCase() + location.slice(1);
-}
-
-function locationEntries(item) {
-  return Object.entries(item?.inventory || {}).filter(([, quantity]) => Number(quantity) > 0);
-}
-
-function unitDef(item) {
-  return props.unitsByRef[item?.unitRef] || null;
-}
-
-function unitDisplay(item) {
-  const resolvedUnit = unitDef(item);
-  if (!resolvedUnit) {
-    return "";
-  }
-  const unitLabel = resolvedUnit.alias || resolvedUnit.unit;
-  return unitLabel.charAt(0).toUpperCase() + unitLabel.slice(1);
-}
-
-function quantityWithUnit(item, quantity) {
-  const resolvedUnit = unitDef(item);
-  if (!resolvedUnit || !Number.isFinite(Number(quantity))) {
-    return String(quantity);
-  }
-  const isSingular = Number(quantity) === 1;
-  return `${quantity} ${isSingular ? resolvedUnit.unit : resolvedUnit.pluralUnit}`;
-}
-
-function totalInventoryText(item) {
-  const totalQuantity = Object.values(item?.inventory || {}).reduce(
-    (total, quantity) => total + Number(quantity || 0),
-    0
-  );
-  return quantityWithUnit(item, totalQuantity);
-}
 </script>
 
 <template>
@@ -69,19 +38,19 @@ function totalInventoryText(item) {
     <v-card-text>
       <v-list density="compact">
         <v-list-item>
-          <v-list-item-title>{{ unitDisplay(item) }}</v-list-item-title>
+          <v-list-item-title>{{ unitDisplay(item, props.unitsByRef) }}</v-list-item-title>
           <v-list-item-subtitle class="muted-label">Unit</v-list-item-subtitle>
         </v-list-item>
         <v-list-item v-for="([location, quantity], idx) in locationEntries(item)" :key="`desktop-${location}-${idx}`">
-          <v-list-item-title>{{ quantityWithUnit(item, quantity) }}</v-list-item-title>
-          <v-list-item-subtitle class="muted-label">In {{ locationLabel(location) }}</v-list-item-subtitle>
+          <v-list-item-title>{{ quantityWithUnit(item, quantity, props.unitsByRef) }}</v-list-item-title>
+          <v-list-item-subtitle class="muted-label">In {{ resolveLocationLabel(location, props.locationLabels) }}</v-list-item-subtitle>
         </v-list-item>
         <v-list-item>
-          <v-list-item-title>{{ totalInventoryText(item) }}</v-list-item-title>
+          <v-list-item-title>{{ totalInventoryText(item, props.unitsByRef) }}</v-list-item-title>
           <v-list-item-subtitle class="muted-label">Total Inventory</v-list-item-subtitle>
         </v-list-item>
         <v-list-item>
-          <v-list-item-title>{{ quantityWithUnit(item, item.shopping) }}</v-list-item-title>
+          <v-list-item-title>{{ quantityWithUnit(item, item.shopping, props.unitsByRef) }}</v-list-item-title>
           <v-list-item-subtitle class="muted-label">On Shopping List</v-list-item-subtitle>
         </v-list-item>
       </v-list>
