@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import BasicModal from "./basicModal.vue";
+import { unitOptionLabel } from "../../composables/itemHelpers";
 const props = defineProps({
   protoItem: {
     type: Object,
@@ -43,9 +44,6 @@ function locationLabel(location) {
   return props.locationLabels[location] || location;
 }
 
-function unitOptionLabel(unitDef) {
-  return `${unitDef.alias} (${unitDef.unit})`;
-}
 </script>
 <template>
   <div>

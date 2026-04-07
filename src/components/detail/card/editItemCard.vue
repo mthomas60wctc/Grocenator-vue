@@ -1,6 +1,7 @@
 <script setup>
 import CardActionButton from "../../shared/cardActionButton.vue";
 import { useItemEditDraft } from "../../../composables/useItemEditDraft";
+import { unitOptionLabel } from "../../../composables/itemHelpers";
 
 const props = defineProps({
   item: {
@@ -42,7 +43,7 @@ function save() {
       <v-select
         label="Unit"
         :items="units"
-        item-title="alias"
+        :item-title="unitOptionLabel"
         item-value="unit"
         v-model="draft.unitRef"
         density="compact"

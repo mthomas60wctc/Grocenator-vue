@@ -1,12 +1,6 @@
 <script setup>
 import CardActionButton from "../../shared/cardActionButton.vue";
-import {
-  locationEntries,
-  quantityWithUnit,
-  resolveLocationLabel,
-  totalInventoryText,
-  unitDisplay,
-} from "../../../composables/itemHelpers";
+import ItemSummary from "../shared/itemSummary.vue";
 
 const props = defineProps({
   item: {
@@ -36,24 +30,12 @@ function handleAction(action) {
       <span>{{ item.name }}</span>
     </v-card-title>
     <v-card-text>
-      <v-list density="compact">
-        <v-list-item>
-          <v-list-item-title>{{ unitDisplay(item, props.unitsByRef) }}</v-list-item-title>
-          <v-list-item-subtitle class="muted-label">Unit</v-list-item-subtitle>
-        </v-list-item>
-        <v-list-item v-for="([location, quantity], idx) in locationEntries(item)" :key="`desktop-${location}-${idx}`">
-          <v-list-item-title>{{ quantityWithUnit(item, quantity, props.unitsByRef) }}</v-list-item-title>
-          <v-list-item-subtitle class="muted-label">In {{ resolveLocationLabel(location, props.locationLabels) }}</v-list-item-subtitle>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-title>{{ totalInventoryText(item, props.unitsByRef) }}</v-list-item-title>
-          <v-list-item-subtitle class="muted-label">Total Inventory</v-list-item-subtitle>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-title>{{ quantityWithUnit(item, item.shopping, props.unitsByRef) }}</v-list-item-title>
-          <v-list-item-subtitle class="muted-label">On Shopping List</v-list-item-subtitle>
-        </v-list-item>
-      </v-list>
+      <item-summary
+        :item="item"
+        :location-labels="props.locationLabels"
+        :units-by-ref="props.unitsByRef"
+        entry-prefix="desktop"
+      />
     </v-card-text>
     <v-card-actions class="pa-0 ma-0 action-row">
       <card-action-button color="primary" icon="mdi-pencil" aria-label="Edit" curved-lower-corners @click="handleAction('edit')" />
@@ -87,9 +69,4 @@ function handleAction(action) {
   margin-inline-start: 0;
 }
 
-.muted-label {
-  font-size: 0.72rem;
-  line-height: 1.1;
-  opacity: 0.65;
-}
 </style>

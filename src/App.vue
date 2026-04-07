@@ -12,6 +12,8 @@ import MoveItemCard from "./components/detail/card/moveItemCard.vue";
 import UndoToast from "./components/modals/undoToast.vue";
 import AddItemModal from "./components/modals/addItemModal.vue";
 import { units } from "./data/units";
+import { ItemModel } from "./models/itemModel";
+import { ItemCollection } from "./models/itemCollection";
 
 // State (Replacing data)
 const categories = ref({
@@ -46,51 +48,41 @@ const locationLabels = {
   pantry: "Pantry",
 };
 const inventoryLocations = categories.value.inventory;
-const unitsByRef = units.reduce((acc, unitDef) => {
-  acc[unitDef.unit] = unitDef;
-  return acc;
-}, {});
+const unitsByRef = units;
+const unitOptions = Object.values(unitsByRef);
+const defaultUnitRef = Object.keys(unitsByRef)[0] || "";
 
 function createInventory(initialValues = {}) {
-  return inventoryLocations.reduce((inventory, location) => {
-    inventory[location] = Number(initialValues[location] || 0);
-    return inventory;
-  }, {});
+  return ItemModel.empty(inventoryLocations).normalizeInventory(initialValues);
 }
 
 const itemList = ref([
-  { name: "Almonds", inventory: createInventory({ cupboard: 2, pantry: 1 }), shopping: 1, unitRef: "lb", restock: 0 },
-  { name: "Apples", inventory: createInventory({ refrigerator: 6 }), shopping: 5, unitRef: "count", restock: 0 },
-  { name: "Bananas", inventory: createInventory({ pantry: 2, refrigerator: 3 }), shopping: 2, unitRef: "count", restock: 0 },
-  { name: "Bell Peppers", inventory: createInventory({ refrigerator: 4 }), shopping: 0, unitRef: "count", restock: 0 },
-  { name: "Bread", inventory: createInventory({ cupboard: 1, freezer: 1 }), shopping: 0, unitRef: "loaf", restock: 2 },
-  { name: "Broccoli", inventory: createInventory({ refrigerator: 2 }), shopping: 1, unitRef: "head", restock: 0 },
-  { name: "Butter", inventory: createInventory({ refrigerator: 1, freezer: 2 }), shopping: 0, unitRef: "lb", restock: 1 },
-  { name: "Canned Beans", inventory: createInventory({ cupboard: 4, pantry: 2 }), shopping: 0, unitRef: "can", restock: 3 },
-  { name: "Cheese", inventory: createInventory({ refrigerator: 12 }), shopping: 8, unitRef: "oz", restock: 0 },
-  { name: "Chicken Breast", inventory: createInventory({ freezer: 3 }), shopping: 2, unitRef: "lb", restock: 0 },
-  { name: "Coffee", inventory: createInventory({ cupboard: 1, pantry: 1 }), shopping: 1, unitRef: "bag", restock: 1 },
-  { name: "Eggs", inventory: createInventory({ refrigerator: 12 }), shopping: 0, unitRef: "count", restock: 2 },
-  { name: "Flour", inventory: createInventory({ pantry: 3, cupboard: 1 }), shopping: 5, unitRef: "lb", restock: 3 },
-  { name: "Ground Beef", inventory: createInventory({ freezer: 2 }), shopping: 0, unitRef: "lb", restock: 0 },
-  { name: "Honey", inventory: createInventory({ pantry: 2, cupboard: 1 }), shopping: 0, unitRef: "jar", restock: 1 },
-  { name: "Milk", inventory: createInventory({ refrigerator: 1 }), shopping: 1, unitRef: "gal", restock: 2 },
-  { name: "Olive Oil", inventory: createInventory({ pantry: 1, cupboard: 1 }), shopping: 1, unitRef: "L", restock: 1 },
-  { name: "Pasta", inventory: createInventory({ pantry: 3, cupboard: 2 }), shopping: 0, unitRef: "lb", restock: 3 },
-  { name: "Rice", inventory: createInventory({ pantry: 2 }), shopping: 2, unitRef: "lb", restock: 3 },
-  { name: "Shrimp", inventory: createInventory({ freezer: 1 }), shopping: 1, unitRef: "lb", restock: 0 },
-  { name: "Spinach", inventory: createInventory({ refrigerator: 1 }), shopping: 0, unitRef: "oz", restock: 0 },
-  { name: "Sugar", inventory: createInventory({ pantry: 4 }), shopping: 0, unitRef: "lb", restock: 2 },
-  { name: "Tuna", inventory: createInventory({ cupboard: 3 }), shopping: 0, unitRef: "can", restock: 2 },
-  { name: "Yogurt", inventory: createInventory({ refrigerator: 6 }), shopping: 0, unitRef: "cup", restock: 12 },
+  ItemModel.from({ name: "Almonds", inventory: createInventory({ cupboard: 2, pantry: 1 }), shopping: 1, unitRef: "lb", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Apples", inventory: createInventory({ refrigerator: 6 }), shopping: 5, unitRef: "count", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Bananas", inventory: createInventory({ pantry: 2, refrigerator: 3 }), shopping: 2, unitRef: "count", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Bell Peppers", inventory: createInventory({ refrigerator: 4 }), shopping: 0, unitRef: "count", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Bread", inventory: createInventory({ cupboard: 1, freezer: 1 }), shopping: 0, unitRef: "loaf", restock: 2 }, inventoryLocations),
+  ItemModel.from({ name: "Broccoli", inventory: createInventory({ refrigerator: 2 }), shopping: 1, unitRef: "head", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Butter", inventory: createInventory({ refrigerator: 1, freezer: 2 }), shopping: 0, unitRef: "lb", restock: 1 }, inventoryLocations),
+  ItemModel.from({ name: "Canned Beans", inventory: createInventory({ cupboard: 4, pantry: 2 }), shopping: 0, unitRef: "can", restock: 3 }, inventoryLocations),
+  ItemModel.from({ name: "Cheese", inventory: createInventory({ refrigerator: 12 }), shopping: 8, unitRef: "oz", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Chicken Breast", inventory: createInventory({ freezer: 3 }), shopping: 2, unitRef: "lb", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Coffee", inventory: createInventory({ cupboard: 1, pantry: 1 }), shopping: 1, unitRef: "bag", restock: 1 }, inventoryLocations),
+  ItemModel.from({ name: "Eggs", inventory: createInventory({ refrigerator: 12 }), shopping: 0, unitRef: "count", restock: 2 }, inventoryLocations),
+  ItemModel.from({ name: "Flour", inventory: createInventory({ pantry: 3, cupboard: 1 }), shopping: 5, unitRef: "lb", restock: 3 }, inventoryLocations),
+  ItemModel.from({ name: "Ground Beef", inventory: createInventory({ freezer: 2 }), shopping: 0, unitRef: "lb", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Honey", inventory: createInventory({ pantry: 2, cupboard: 1 }), shopping: 0, unitRef: "jar", restock: 1 }, inventoryLocations),
+  ItemModel.from({ name: "Milk", inventory: createInventory({ refrigerator: 1 }), shopping: 1, unitRef: "gal", restock: 2 }, inventoryLocations),
+  ItemModel.from({ name: "Olive Oil", inventory: createInventory({ pantry: 1, cupboard: 1 }), shopping: 1, unitRef: "L", restock: 1 }, inventoryLocations),
+  ItemModel.from({ name: "Pasta", inventory: createInventory({ pantry: 3, cupboard: 2 }), shopping: 0, unitRef: "lb", restock: 3 }, inventoryLocations),
+  ItemModel.from({ name: "Rice", inventory: createInventory({ pantry: 2 }), shopping: 2, unitRef: "lb", restock: 3 }, inventoryLocations),
+  ItemModel.from({ name: "Shrimp", inventory: createInventory({ freezer: 1 }), shopping: 1, unitRef: "lb", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Spinach", inventory: createInventory({ refrigerator: 1 }), shopping: 0, unitRef: "oz", restock: 0 }, inventoryLocations),
+  ItemModel.from({ name: "Sugar", inventory: createInventory({ pantry: 4 }), shopping: 0, unitRef: "lb", restock: 2 }, inventoryLocations),
+  ItemModel.from({ name: "Tuna", inventory: createInventory({ cupboard: 3 }), shopping: 0, unitRef: "can", restock: 2 }, inventoryLocations),
+  ItemModel.from({ name: "Yogurt", inventory: createInventory({ refrigerator: 6 }), shopping: 0, unitRef: "cup", restock: 12 }, inventoryLocations),
 ]);
-const protoItem = ref({
-  name: "",
-  inventory: createInventory(),
-  shopping: 0,
-  unitRef: units[0].unit,
-  restock: 0,
-});
+const protoItem = ref(ItemModel.empty(inventoryLocations, { unitRef: defaultUnitRef }));
 
 // Methods
 function toggleTheme() {
@@ -174,13 +166,13 @@ function saveEdit(draft) {
   }
   Object.assign(selectedItem.value, {
     name: draft.name,
-    inventory: { ...createInventory(draft.inventory), ...draft.inventory },
+    inventory: ItemModel.from({ inventory: draft.inventory }, inventoryLocations).inventory,
     shopping: Number(draft.shopping || 0),
-    unitRef: draft.unitRef || units[0].unit,
+    unitRef: draft.unitRef || defaultUnitRef,
     restock: Number(draft.restock || 0),
   });
 
-  itemList.value.sort((a, b) => a.name.localeCompare(b.name));
+  itemList.value = ItemCollection.sortByName(itemList.value);
   detailPanelKey.value += 1;
   cancelEdit();
 }
@@ -189,21 +181,15 @@ function moveItem(movePayload) {
   if (!selectedItem.value || !movePayload) {
     return;
   }
-  const fromLocation = movePayload.fromLocation;
-  const toLocation = movePayload.toLocation;
-  const requestedQuantity = Number(movePayload.quantity || 0);
-
-  if (!fromLocation || !toLocation || fromLocation === toLocation || requestedQuantity <= 0) {
-    return;
-  }
-  const availableQuantity = Number(selectedItem.value.inventory?.[fromLocation] || 0);
-  const transferQuantity = Math.min(requestedQuantity, availableQuantity);
+  const transferQuantity = ItemModel.from(selectedItem.value, inventoryLocations).moveQuantity(
+    movePayload.fromLocation,
+    movePayload.toLocation,
+    movePayload.quantity
+  );
 
   if (transferQuantity <= 0) {
     return;
   }
-  selectedItem.value.inventory[fromLocation] = availableQuantity - transferQuantity;
-  selectedItem.value.inventory[toLocation] = Number(selectedItem.value.inventory?.[toLocation] || 0) + transferQuantity;
 
   detailPanelKey.value += 1;
   cancelMove();
@@ -213,14 +199,14 @@ function removeItem(item) {
   if (!item) {
     return;
   }
-  const itemIndex = itemList.value.findIndex((listItem) => listItem === item);
-  if (itemIndex < 0) {
+  const result = ItemCollection.removeByReference(itemList.value, item);
+  if (result.index < 0) {
     return;
   }
   lastDeletedItem.value = item;
-  lastDeletedIndex.value = itemIndex;
+  lastDeletedIndex.value = result.index;
   deletedItemName.value = item.name || "Item";
-  itemList.value.splice(itemIndex, 1);
+  itemList.value = result.items;
   if (selectedItem.value === item) {
     handleCloseDetail();
   }
@@ -254,21 +240,11 @@ function handleUndoToastVisibility(nextValue) {
 }
 
 function addItem() {
-  itemList.value.push({
-    ...protoItem.value,
-    inventory: { ...protoItem.value.inventory },
-  });
-  itemList.value.sort((a, b) => a.name.localeCompare(b.name));
+  itemList.value = ItemCollection.insertSorted(itemList.value, protoItem.value.clone());
   resetProto();
 }
 function resetProto() {
-  protoItem.value = {
-    name: "",
-    inventory: createInventory(),
-    shopping: 0,
-    unitRef: units[0].unit,
-    restock: 0,
-  };
+  protoItem.value = ItemModel.empty(inventoryLocations, { unitRef: defaultUnitRef });
 }
 
 function resolveRefElement(target) {
@@ -451,7 +427,7 @@ const themeIcon = computed(() => (theme.global.current.value.dark ? "mdi-weather
                 v-else-if="selectedItem && isEditingItem"
                 key="desktop-edit-card"
                 :item="selectedItem"
-                :units="units"
+                :units="unitOptions"
                 :inventory-locations="categories.inventory"
                 :location-labels="locationLabels"
                 @cancel="cancelEdit"
@@ -479,7 +455,7 @@ const themeIcon = computed(() => (theme.global.current.value.dark ? "mdi-weather
       :proto-item="protoItem"
       :locations="categories.inventory"
       :location-labels="locationLabels"
-      :units="units"
+      :units="unitOptions"
       @open="resetProto"
       @submit="addItem"
     ></add-item-modal>

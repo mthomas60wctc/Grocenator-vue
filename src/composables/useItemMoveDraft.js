@@ -1,12 +1,13 @@
 import { computed, ref, watch } from "vue";
 import { createMoveDraft, inputToNumber } from "./itemHelpers";
+import { ItemModel } from "../models/itemModel";
 
 export function useItemMoveDraft(props, getLocationLabel) {
   const draft = ref(createMoveDraft(props.item, props.inventoryLocations));
 
   const fromLocationOptions = computed(() =>
     props.inventoryLocations
-      .filter((location) => Number(props.item?.inventory?.[location] || 0) > 0)
+      .filter((location) => ItemModel.from(props.item, props.inventoryLocations).hasInventoryAt(location))
       .map((location) => ({
         title: getLocationLabel(location),
         value: location,
