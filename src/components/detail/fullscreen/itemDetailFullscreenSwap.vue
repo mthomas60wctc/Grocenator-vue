@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from "vue";
 import { useItemMoveDraft } from "../../../composables/useItemMoveDraft";
 import CardActionButton from "../../shared/cardActionButton.vue";
 
@@ -19,6 +20,24 @@ const props = defineProps({
 
 const emit = defineEmits(["cancel", "save"]);
 const { draft, fromLocationOptions, toLocationOptions, inputToNumber } = useItemMoveDraft(props, locationLabel);
+
+const fromLabel = computed(() => {
+  const location = draft.value.fromLocation;
+  if (!location) {
+    return "From";
+  }
+  const quantity = Number(props.item?.inventory?.[location] || 0);
+  return `From (${quantity} currently)`;
+});
+
+const toLabel = computed(() => {
+  const location = draft.value.toLocation;
+  if (!location) {
+    return "To";
+  }
+  const quantity = Number(props.item?.inventory?.[location] || 0);
+  return `To (${quantity} currently)`;
+});
 
 function locationLabel(location) {
   return props.locationLabels[location] || location.charAt(0).toUpperCase() + location.slice(1);
@@ -44,7 +63,7 @@ function save() {
               type="number"
               density="compact"
               hide-details
-              label="Move"
+              label="Move quantity"
               class="inline-edit-field inline-edit-field--full"
             />
           </v-list-item-title>
@@ -53,7 +72,7 @@ function save() {
           <v-list-item-title class="detail-value">
             <v-select
               v-model="draft.fromLocation"
-              label="From"
+              :label="fromLabel"
               :items="fromLocationOptions"
               item-title="title"
               item-value="value"
@@ -67,7 +86,7 @@ function save() {
           <v-list-item-title class="detail-value">
             <v-select
               v-model="draft.toLocation"
-              label="To"
+              :label="toLabel"
               :items="toLocationOptions"
               item-title="title"
               item-value="value"

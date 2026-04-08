@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { useTheme, useDisplay } from "vuetify";
 import TabNavigator from "./components/navigation/tabNavigator.vue";
 import TabBody from "./components/navigation/tabBody.vue";
@@ -39,6 +39,8 @@ const detailPanelKey = ref(0);
 const navbarHeight = ref(56);
 const navbarElement = ref(null);
 const containerElement = ref(null);
+const listSectionElement = ref(null);
+const listCardElement = ref(null);
 const theme = useTheme();
 const display = useDisplay();
 const locationLabels = {
@@ -98,13 +100,45 @@ function setActiveTab(tab) {
     if (tab === "inventory") {
       inventoryFilters.value = [...categories.value.inventory];
     }
+    scheduleListScroll();
   }
 }
 
 function handleSubcategorySelect(subcategory) {
   selectedSubcategory.value = subcategory;
   inventoryFilters.value = [subcategory];
+  scheduleListScroll();
 }
+
+let scrollTimeoutId = null;
+
+function scheduleListScroll() {
+  if (scrollTimeoutId) {
+    window.clearTimeout(scrollTimeoutId);
+  }
+
+  scrollTimeoutId = window.setTimeout(() => {
+    scrollTimeoutId = null;
+    void scrollListToTop();
+  }, 180);
+}
+
+async function scrollListToTop() {
+  await nextTick();
+  await nextTick();
+
+  const targetDom = resolveRefElement(listCardElement.value) || resolveRefElement(listSectionElement.value);
+  if (!targetDom) {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    return;
+  }
+
+  targetDom.scrollIntoView({ block: "start", inline: "nearest", behavior: "auto" });
+}
+
+watch([activeTab, selectedSubcategory], () => {
+  scheduleListScroll();
+}, { flush: "post" });
 
 function handleInventoryFiltersUpdate(nextFilters) {
   inventoryFilters.value = nextFilters;
@@ -310,6 +344,19 @@ const filteredShoppingList = computed(() => {
   }
   return shoppingList.value.filter((item) => item.name.toLowerCase().includes(searchValue));
 });
+const sectionCounts = computed(() => {
+  const byLocation = inventoryLocations.reduce((counts, location) => {
+    counts[location] = itemList.value.filter((item) => Number(item.inventory?.[location] || 0) > 0).length;
+    return counts;
+  }, {});
+
+  return {
+    inventory: inventoryList.value.length,
+    catalog: itemList.value.length,
+    shopping: shoppingList.value.length,
+    ...byLocation,
+  };
+});
 const currentBreakpoint = computed(() => display.name.value || "xs");
 const isEdgeToEdge = computed(() => ["xs", "md", "lg"].includes(currentBreakpoint.value));
 const isSmall = computed(() => currentBreakpoint.value === "xs");
@@ -339,6 +386,7 @@ const themeIcon = computed(() => (theme.global.current.value.dark ? "mdi-weather
                 <tab-navigator
                   :categories="categories"
                   :active-tab="activeTab"
+                  :section-counts="sectionCounts"
                   @change-tab="setActiveTab"
                   @subcategory-select="handleSubcategorySelect"
                 ></tab-navigator>
@@ -347,8 +395,8 @@ const themeIcon = computed(() => (theme.global.current.value.dark ? "mdi-weather
           </v-col>
 
           <!-- Center (list) -->
-          <v-col cols="12" sm="12" md="6" lg="6" xl="6" xxl="4">
-            <v-card>
+          <v-col ref="listSectionElement" cols="12" sm="12" md="6" lg="6" xl="6" xxl="4">
+            <v-card ref="listCardElement" class="list-scroll-target" :style="{ scrollMarginTop: `${navbarHeight + 8}px` }">
               <v-card-text>
                 <tab-body :tabs="Object.keys(categories)" :active-tab="activeTab">
                   <template #inventory>

@@ -18,6 +18,11 @@ $headings-font-weight: 700;
 $headings-letter-spacing: -0.03em;
 $line-height-base: 1.6;
 
+$app-frame-padding: 24px;
+$app-frame-padding-mobile: 16px;
+$app-grid-gutter: 12px;
+$app-grid-gutter-mobile: 8px;
+
 $theme-colors: (
   "primary": $primary,
   "secondary": $secondary,
@@ -67,12 +72,12 @@ $theme-colors: (
   .v-tab.v-tab--selected .v-btn__content,
   .v-list-item.v-list-item--active .v-list-item-title,
   .v-list-item.v-list-item--active .v-list-item-subtitle {
-    color: rgb(var(--v-theme-on-primary)) !important;
+    color: rgb(var(--v-theme-on-primary));
   }
 
   .v-chip.v-chip--selected {
-    background-color: rgb(var(--v-theme-primary)) !important;
-    border-color: rgb(var(--v-theme-primary)) !important;
+    background-color: rgb(var(--v-theme-primary));
+    border-color: rgb(var(--v-theme-primary));
   }
 
   .v-chip.v-chip--selected .v-chip__content,
@@ -81,18 +86,40 @@ $theme-colors: (
   .v-chip.v-chip--variant-tonal .v-chip__content,
   .v-chip.v-chip--variant-tonal .v-chip__prepend,
   .v-chip.v-chip--variant-tonal .v-chip__append {
-    color: rgb(var(--v-theme-on-primary)) !important;
+    color: rgb(var(--v-theme-on-primary));
   }
 
   .v-chip.v-chip--variant-tonal.text-primary {
-    background-color: rgba(var(--v-theme-primary), 0.24) !important;
-    border-color: rgba(var(--v-theme-primary), 0.46) !important;
+    background-color: rgba(var(--v-theme-primary), 0.24);
+    border-color: rgba(var(--v-theme-primary), 0.46);
   }
 }
 
 body {
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em; // Tighten the body slightly for that 'pro' look
+}
+
+.v-main > .v-container,
+.v-main .v-container {
+  padding: $app-frame-padding;
+}
+
+.v-main .v-row {
+  --v-gutter-x: #{$app-grid-gutter};
+  --v-gutter-y: #{$app-grid-gutter};
+}
+
+@media (max-width: 599.98px) {
+  .v-main > .v-container,
+  .v-main .v-container {
+    padding: $app-frame-padding-mobile;
+  }
+
+  .v-main .v-row {
+    --v-gutter-x: #{$app-grid-gutter-mobile};
+    --v-gutter-y: #{$app-grid-gutter-mobile};
+  }
 }
 
 input[type="number"] {
@@ -117,4 +144,8 @@ input[type="number"]::-webkit-inner-spin-button {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba($primary, 0.2);
   backdrop-filter: blur(10px);
+}
+
+.list-scroll-target {
+  scroll-margin-top: 72px;
 }
